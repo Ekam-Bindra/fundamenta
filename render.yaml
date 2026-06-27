@@ -1,0 +1,17 @@
+# Free-tier deploy on Render (https://render.com). The free web service sleeps
+# after inactivity, which is fine for an early-stage API. Data lives in a free
+# external Postgres (Neon/Supabase) so it survives restarts — set DATABASE_URL
+# in the Render dashboard. The data pipeline runs from GitHub Actions, not here.
+services:
+  - type: web
+    name: trends-api
+    runtime: docker
+    plan: free
+    healthCheckPath: /health
+    envVars:
+      - key: DATABASE_URL
+        sync: false          # set to your Neon/Supabase URL in the dashboard
+      - key: ADMIN_TOKEN
+        generateValue: true
+      - key: RUN_SCHEDULER
+        value: "false"

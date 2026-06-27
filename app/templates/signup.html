@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>{{ service_name }} — Get an API key</title>
+  <style>
+    :root { color-scheme: light dark; }
+    body { font-family: ui-sans-serif, system-ui, sans-serif; margin: 0; padding: 2.5rem 1.25rem;
+           background: #0f1115; color: #e6e6e6; display: flex; justify-content: center; }
+    .wrap { width: 100%; max-width: 680px; }
+    h1 { font-size: 1.6rem; margin: 0 0 .4rem; }
+    .lead { color: #8b93a7; margin: 0 0 2rem; }
+    .cards { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+    @media (max-width: 560px) { .cards { grid-template-columns: 1fr; } }
+    .card { background: #1a1d24; border: 1px solid #2a2e38; border-radius: 14px; padding: 1.25rem; }
+    .card h2 { font-size: 1.05rem; margin: 0 0 .3rem; }
+    .price { font-size: 1.9rem; font-weight: 700; }
+    .price small { font-size: .9rem; color: #8b93a7; font-weight: 400; }
+    .muted { color: #8b93a7; font-size: .85rem; }
+    ul { padding-left: 1.1rem; margin: .6rem 0; }
+    li { margin: .25rem 0; }
+    button, .btn { display: inline-block; border: 0; border-radius: 10px; padding: .7rem 1rem;
+            font-size: .95rem; font-weight: 600; cursor: pointer; text-decoration: none; text-align: center; }
+    .primary { background: #3b82f6; color: #fff; width: 100%; }
+    .pro { background: #4ade80; color: #06281a; width: 100%; }
+    .pro[aria-disabled="true"] { background: #2a3a31; color: #6b7d72; pointer-events: none; }
+    #result { margin-top: 1.5rem; display: none; }
+    .keybox { display: flex; gap: .5rem; margin: .5rem 0; }
+    code, pre { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
+    .key { flex: 1; background: #0b0d11; border: 1px solid #2a2e38; border-radius: 8px;
+           padding: .6rem .7rem; overflow-x: auto; white-space: nowrap; }
+    .copy { background: #2a2e38; color: #e6e6e6; }
+    pre.curl { background: #0b0d11; border: 1px solid #2a2e38; border-radius: 8px;
+               padding: .8rem; overflow-x: auto; font-size: .82rem; }
+    .warn { color: #fbbf24; font-size: .85rem; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <h1>{{ service_name }}</h1>
+    <p class="lead">Clean, normalized US company fundamentals from SEC filings. Start free in seconds.</p>
+
+    <div class="cards">
+      <div class="card">
+        <h2>Free</h2>
+        <div class="price">$0</div>
+        <ul class="muted">
+          <li>{{ free_limit }} requests / day</li>
+          <li>All endpoints</li>
+          <li>No credit card</li>
+        </ul>
+        <button id="gen" class="primary">Generate free API key</button>
+      </div>
+
+      <div class="card">
+        <h2>Pro</h2>
+        <div class="price">${{ pro_price }}<small> / mo</small></div>
+        <ul class="muted">
+          <li>{{ pro_limit }} requests / day</li>
+          <li>Priority capacity</li>
+          <li>Cancel anytime</li>
+        </ul>
+        {% if payment_link %}
+        <a id="upgrade" class="btn pro" aria-disabled="true">Get a key first ↑</a>
+        {% else %}
+        <p class="muted">Self-serve upgrades aren't enabled on this instance yet.</p>
+        {% endif %}
+      </div>
+    </div>
+
+    <div id="result" class="card">
+      <h2>Your API key</h2>
+      <p class="warn">⚠️ Save this now — it's shown once. Send it as the <code>X-API-Key</code> header.</p>
+      <div class="keybox">
+        <div id="key" class="key"></div>
+        <button id="copy" class="copy">Copy</button>
+      </div>
+      <p class="muted">Try it:</p>
+      <pre class="curl" id="curl"></pre>
+      {% if payment_link %}
+      <p class="muted">Ready for more? Use the <strong>Upgrade to Pro</strong> button above — your key is linked to checkout automatically.</p>
+      {% endif %}
+    </div>
+  </div>
+
+  <script>
+    const PAYMENT_LINK = "{{ payment_link }}";
+    const gen = document.getElementById("gen");
+    const result = document.getElementById("result");
+    const keyEl = document.getElementById("key");
+    const curlEl = document.getElementById("curl");
+    const upgrade = document.getElementById("upgrade");
+
+    gen.addEventListener("click", async () => {
+      gen.disabled = true;
+      gen.textContent = "Generating…";
+      try {
+        const r = await fetch("/v1/keys?name=web-signup", { method: "POST" });
+        if (!r.ok) throw new Error("signup failed");
+        const { api_key } = await r.json();
+        keyEl.textContent = api_key;
+        curlEl.textContent =
+          `curl -H "X-API-Key: ${api_key}" \\\n  "${location.origin}/v1/companies/AAPL"`;
+        result.style.display = "block";
+        if (PAYMENT_LINK && upgrade) {
+          const sep = PAYMENT_LINK.includes("?") ? "&" : "?";
+          upgrade.href = `${PAYMENT_LINK}${sep}client_reference_id=${encodeURIComponent(api_key)}`;
+          upgrade.setAttribute("aria-disabled", "false");
+          upgrade.textContent = "Upgrade to Pro →";
+        }
+        result.scrollIntoView({ behavior: "smooth" });
+      } catch (e) {
+        gen.textContent = "Something went wrong — retry";
+        gen.disabled = false;
+        return;
+      }
+      gen.textContent = "Generate another key";
+      gen.disabled = false;
+    });
+
+    document.getElementById("copy").addEventListener("click", async () => {
+      await navigator.clipboard.writeText(keyEl.textContent);
+      const b = document.getElementById("copy");
+      b.textContent = "Copied!";
+      setTimeout(() => (b.textContent = "Copy"), 1500);
+    });
+  </script>
+</body>
+</html>

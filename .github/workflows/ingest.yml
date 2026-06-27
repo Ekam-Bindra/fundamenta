@@ -1,0 +1,30 @@
+# Runs the data pipeline on a schedule — for free, on GitHub's infrastructure.
+# This is how the API stays fresh without paying for an always-on worker.
+#
+# Setup (repo Settings > Secrets and variables > Actions):
+#   - DATABASE_URL   : your free managed Postgres (Neon/Supabase) connection string
+#   - SEC_USER_AGENT : "Your Name your-email@example.com" (SEC requires this)
+name: ingest
+
+on:
+  schedule:
+    - cron: "0 6 * * *" # daily at 06:00 UTC (fundamentals change slowly)
+  workflow_dispatch: {} # allow manual runs from the Actions tab
+
+jobs:
+  ingest:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: pip install -r requirements.txt
+      - name: Run pipeline
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          SEC_USER_AGENT: ${{ secrets.SEC_USER_AGENT }}
+          # Cover the full S&P 500 in production. Remove this line (or point it at
+          # a smaller file) for a lighter, faster run.
+          COVERAGE_FILE: app/data/sp500.txt
+        run: python -m app.pipeline.run

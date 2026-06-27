@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Fundamentals API — Operator Dashboard</title>
+  <style>
+    :root { color-scheme: light dark; }
+    body { font-family: ui-sans-serif, system-ui, sans-serif; margin: 0; padding: 2rem;
+           background: #0f1115; color: #e6e6e6; }
+    h1 { font-size: 1.4rem; margin: 0 0 1.5rem; }
+    h2 { font-size: 1.1rem; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+            gap: 1rem; margin-bottom: 2rem; }
+    .card { background: #1a1d24; border: 1px solid #2a2e38; border-radius: 12px; padding: 1rem 1.2rem; }
+    .card .label { font-size: .75rem; text-transform: uppercase; letter-spacing: .05em; color: #8b93a7; }
+    .card .value { font-size: 1.8rem; font-weight: 700; margin-top: .3rem; }
+    .mrr .value { color: #4ade80; }
+    table { width: 100%; border-collapse: collapse; background: #1a1d24;
+            border: 1px solid #2a2e38; border-radius: 12px; overflow: hidden; }
+    th, td { text-align: left; padding: .6rem .9rem; border-bottom: 1px solid #2a2e38; }
+    th { font-size: .75rem; text-transform: uppercase; color: #8b93a7; }
+    tr:last-child td { border-bottom: none; }
+    .muted { color: #8b93a7; font-size: .85rem; }
+  </style>
+</head>
+<body>
+  <h1>📊 Fundamentals API — Operator Dashboard</h1>
+
+  <div class="grid">
+    <div class="card mrr"><div class="label">Estimated MRR</div><div class="value">${{ estimated_mrr }}</div></div>
+    <div class="card"><div class="label">Pro customers</div><div class="value">{{ pro_keys }}</div></div>
+    <div class="card"><div class="label">Free customers</div><div class="value">{{ free_keys }}</div></div>
+    <div class="card"><div class="label">Calls today</div><div class="value">{{ calls_today }}</div></div>
+    <div class="card"><div class="label">Calls all-time</div><div class="value">{{ calls_total }}</div></div>
+    <div class="card"><div class="label">Companies covered</div><div class="value">{{ companies_covered }}</div></div>
+    <div class="card"><div class="label">Financial-year rows</div><div class="value">{{ financial_rows }}</div></div>
+  </div>
+
+  <p class="muted">Last data refresh: {{ last_fetch }} UTC</p>
+
+  <h2>🏦 Largest covered companies (latest fiscal year)</h2>
+  <table>
+    <thead><tr><th>#</th><th>Ticker</th><th>FY</th><th>Revenue ($B)</th><th>Net margin</th><th>Rev growth</th></tr></thead>
+    <tbody>
+      {% for row in top %}
+      <tr>
+        <td>{{ loop.index }}</td>
+        <td>{{ row.ticker }}</td>
+        <td>{{ row.fiscal_year }}</td>
+        <td>{{ row.revenue_b }}</td>
+        <td>{{ "%.1f%%"|format(row.net_margin * 100) if row.net_margin is not none else "—" }}</td>
+        <td>{{ "%.1f%%"|format(row.revenue_growth * 100) if row.revenue_growth is not none else "—" }}</td>
+      </tr>
+      {% else %}
+      <tr><td colspan="6" class="muted">No data yet — run <code>python -m app.pipeline.run</code></td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</body>
+</html>
