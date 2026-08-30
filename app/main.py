@@ -33,12 +33,12 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(
-    title="Company Fundamentals API",
+    title="Fundamenta",
     version="1.0.0",
     description=(
-        "Clean, normalized company fundamentals (revenue, margins, growth, ROE) "
-        "derived from SEC EDGAR filings. Get a free key at POST /v1/keys, then "
-        "send it as the 'X-API-Key' header."
+        "Fundamenta — clean, normalized company fundamentals (revenue, margins, "
+        "growth, ROE) derived from SEC EDGAR filings. Get a free key at "
+        "POST /v1/keys, then send it as the 'X-API-Key' header."
     ),
     lifespan=lifespan,
 )
@@ -58,7 +58,7 @@ def health():
 @app.get("/", tags=["meta"])
 def root():
     return {
-        "service": "Company Fundamentals API",
+        "service": "Fundamenta",
         "docs": "/docs",
         "signup": "/signup",
         "get_a_key": "POST /v1/keys",

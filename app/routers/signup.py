@@ -22,7 +22,7 @@ def signup(request: Request):
         request,
         "signup.html",
         {
-            "service_name": "Company Fundamentals API",
+            "service_name": "Fundamenta",
             "free_limit": settings.free_daily_limit,
             "pro_limit": settings.pro_daily_limit,
             "pro_price": f"{settings.pro_price_usd:,.0f}",

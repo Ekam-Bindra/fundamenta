@@ -1,4 +1,4 @@
-# Company Fundamentals API — a data-as-a-service business in a box
+# Fundamenta — company fundamentals as a service
 
 A small, autonomous **data API** you can run as a side-income business on **$0 of
 infrastructure**. It serves clean, normalized **company fundamentals** (revenue,
