@@ -2,17 +2,29 @@
 or a local .env file (see .env.example). Defaults are chosen so the project
 runs on a zero-cost local SQLite setup with no secrets required."""
 
+from pydantic import field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
+
+_DEFAULT_DATABASE_URL = "sqlite:///./data.db"
 
 
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(env_file=".env", extra="ignore")
 
+    @field_validator("database_url", mode="before")
+    @classmethod
+    def _fallback_database_url(cls, v):
+        # An unset secret in CI expands to "" and would otherwise crash
+        # create_engine(). Treat empty/whitespace as "use the default".
+        if v is None or not str(v).strip():
+            return _DEFAULT_DATABASE_URL
+        return v
+
     # --- Storage -----------------------------------------------------------
     # SQLite for local dev (free, file-based). In production, point this at a
     # free managed Postgres (Neon / Supabase free tier), e.g.
     #   postgresql://user:pass@host/db
-    database_url: str = "sqlite:///./data.db"
+    database_url: str = _DEFAULT_DATABASE_URL
 
     # --- Auth / billing tiers ---------------------------------------------
     admin_token: str = "change-me"          # protects /dashboard and admin endpoints
