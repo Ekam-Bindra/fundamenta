@@ -7,14 +7,31 @@ from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 
+from sqlmodel import Session, select
+
 from .config import settings
-from .db import init_db
+from .db import engine, init_db
+from .models import Company
 from .routers import billing, companies, dashboard, keys, signup
+from .snapshot import load_snapshot
+
+
+def _seed_from_snapshot() -> None:
+    """If the product tables are empty, load the committed data snapshot.
+
+    This is what lets the API serve real data with no external database — on an
+    ephemeral host the local DB starts empty each boot and is reseeded here."""
+    with Session(engine) as session:
+        if session.exec(select(Company).limit(1)).first() is None:
+            rows = load_snapshot(session)
+            if rows:
+                print(f"loaded {rows} financial rows from committed snapshot")
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     init_db()
+    _seed_from_snapshot()
     scheduler = None
     if settings.run_scheduler:
         # Optional: run the pipeline inside the web process (handy on a single

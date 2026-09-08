@@ -25,6 +25,19 @@ Follow **[LAUNCH.md](LAUNCH.md)** — the step-by-step path from local code to a
 deployed, billable API (Neon + Render + GitHub Actions + RapidAPI/Stripe), all
 on free tiers.
 
+## Runs with no database (zero-signup)
+
+By default Fundamenta needs **no external database**. The pipeline exports a data
+snapshot to [app/data/fundamentals.json](app/data/fundamentals.json) (committed to
+the repo), and the app loads it on startup — so the API serves real data anywhere,
+with nothing to sign up for. The daily GitHub Action regenerates and commits the
+snapshot itself, keeping it fresh autonomously.
+
+Tradeoff: product data works great this way, but **API keys / usage counters** need
+a persistent writable DB, which an ephemeral free host doesn't provide — they reset
+on restart. For a production business that must retain customers, set `DATABASE_URL`
+to a real Postgres (see [LAUNCH.md](LAUNCH.md)). Until then, this is demo/portfolio-grade.
+
 ## Why this data sells
 
 - **Source is free & public domain.** SEC EDGAR has no API key and permits
