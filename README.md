@@ -1,5 +1,13 @@
 # Fundamenta — company fundamentals as a service
 
+[![CI](https://github.com/Ekam-Bindra/fundamenta/actions/workflows/ci.yml/badge.svg)](https://github.com/Ekam-Bindra/fundamenta/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+[![Python 3.9+](https://img.shields.io/badge/python-3.9%2B-blue.svg)](https://www.python.org/)
+
+> **Open source (MIT).** A production-shaped **template for building a
+> data-as-a-service API** — SEC company fundamentals is the reference
+> implementation. Fork it, swap the data source, ship your own.
+
 A small, autonomous **data API** you can run as a side-income business on **$0 of
 infrastructure**. It serves clean, normalized **company fundamentals** (revenue,
 net income, margins, YoY growth, ROE) derived from **SEC EDGAR** filings — the
@@ -168,3 +176,17 @@ The engineering is niche-agnostic. To change data:
    enrichment in [app/pipeline/enrich.py](app/pipeline/enrich.py).
 3. Adjust the product routes in [app/routers/companies.py](app/routers/companies.py).
 4. Auth, metering, billing, dashboard, deploy, and CI all stay the same.
+
+## Contributing
+
+Contributions are welcome — see [CONTRIBUTING.md](CONTRIBUTING.md) and the
+[Code of Conduct](CODE_OF_CONDUCT.md). Found a security issue? Please follow
+[SECURITY.md](SECURITY.md) rather than opening a public issue.
+
+## License
+
+[MIT](LICENSE) © Ekam Bindra.
+
+Data is derived from public **SEC EDGAR** filings (U.S. government, public
+domain). It is provided **as is**, without warranty, and is **not investment
+advice**.

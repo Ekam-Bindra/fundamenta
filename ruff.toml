@@ -1,0 +1,12 @@
+# Ruff configuration — https://docs.astral.sh/ruff/
+# Run: ruff check .   and   ruff format .
+target-version = "py39"
+line-length = 100
+
+[lint]
+select = ["E", "F", "W", "I", "UP", "B", "C4"]
+# E501 (line length) is handled by the formatter; keep lint focused.
+ignore = ["E501"]
+
+[lint.isort]
+known-first-party = ["app"]
