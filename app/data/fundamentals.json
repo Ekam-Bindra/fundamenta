@@ -41285,6 +41285,17 @@
      "revenue": 18831000000.0,
      "revenue_growth": 0.1563,
      "roe": 0.1963
+    },
+    {
+     "assets": 36786000000.0,
+     "equity": 18992000000.0,
+     "fiscal_year": 2026,
+     "liabilities": 17794000000.0,
+     "net_income": 4566000000.0,
+     "net_margin": 0.2129,
+     "revenue": 21448000000.0,
+     "revenue_growth": 0.139,
+     "roe": 0.2404
     }
    ],
    "name": "INTUIT INC.",
@@ -78487,7 +78498,7 @@
      "roe": 0.1161
     }
    ],
-   "name": "US BANCORP DE",
+   "name": "US BANCORP \\DE\\",
    "ticker": "USB"
   },
   {
