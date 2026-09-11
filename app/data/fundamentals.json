@@ -59942,6 +59942,17 @@
      "revenue": 9221500000.0,
      "revenue_growth": 0.1487,
      "roe": 0.1449
+    },
+    {
+     "assets": 48460000000.0,
+     "equity": 27492000000.0,
+     "fiscal_year": 2026,
+     "liabilities": 20968000000.0,
+     "net_income": 307000000.0,
+     "net_margin": 0.0267,
+     "revenue": 11480000000.0,
+     "revenue_growth": 0.2449,
+     "roe": 0.0112
     }
    ],
    "name": "Palo Alto Networks Inc",
